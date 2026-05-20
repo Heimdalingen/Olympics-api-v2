@@ -1,16 +1,69 @@
-db:
-  image: postgres:15-alpine
-  environment:
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    POSTGRES_DB: olympics
-  volumes: 
-    - db_data:/var/lib/postgresql/data
-  healthcheck:
-    test: ["CMD-SHELL", "pg_isready -U postgres"]
-    interval: 5s
-    timeout: 5s
-    retries: 10
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: olympics
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-volumes: 
+  cache:
+    image: redis:7-alpine
+    volumes:
+      - cache_data:/data
+  
+  logger:
+    build: ./services/logger
+    volumes: 
+      - log_data:/logs
+
+  rate-limiter:
+    build: ./services/rate-limiter
+
+  token-shop:
+    build: ./services/token-shop
+
+
+  main-api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/olympics
+      REDIS_URL: redis://cache:6379
+      LOGGER_URL: http://logger:8000
+      RATE_LIMITER_URL: http://rate-limiter:8000
+      TOKEN_SHOP_URL: http://token-shop:8000
+      INITIAL_TOKENS: 10
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      logger:
+        condition: service_started
+      rate-limiter:
+        condition: service_started
+      token-shop:
+        condition: service_started
+    volumes:
+      - ./data:/app/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - main-api
+
+
+volumes:
   db_data:
+  cache_data:
+  log_data:
