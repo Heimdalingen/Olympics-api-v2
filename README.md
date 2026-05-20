@@ -3,6 +3,9 @@
 ## Group Members
 - robinahe@stud.ntnu.no
 
+## Github
+Make sure to check master not main for the assignment
+
 ## Render URL
 https://olympics-api-9xyt.onrender.com
 
