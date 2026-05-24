@@ -13,8 +13,8 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     """Schema for updating a user's email and/or password."""
 
-    email: Optional[str]
-    password: Optional[str]
+    email: Optional[str] = None
+    password: Optional[str] = None
 
 
 class UserOut(BaseModel):

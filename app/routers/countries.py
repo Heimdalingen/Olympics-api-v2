@@ -25,7 +25,7 @@ def get_country(noc: str, user_id: str, request: Request, db: Session = Depends(
         return format_response(cached, request.headers.get("accept", ""))
 
     # Cache miss — query the database
-    events = query_services.get_country(db, noc, limit)
+    events = query_services.get_country(db, noc.upper(), limit)
     if not events:
         raise HTTPException(status_code=404, detail="Country not found")
 
