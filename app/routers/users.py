@@ -6,7 +6,7 @@ from app.schemas.user import UserCreate, UserUpdate, UserOut
 from app.services import user_services
 from app.config import settings
 
-router = APIRouter(prefix="/v1/user", tags=["users"])
+router = APIRouter(prefix="/v2/user", tags=["users"])
 
 
 @router.get("/{user_id}", response_model=UserOut)

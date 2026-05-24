@@ -7,7 +7,7 @@ from app.services import query_services
 from app.utils.dependencies import consume_token
 
 
-router = APIRouter(prefix="/v1/event", tags=["events"])
+router = APIRouter(prefix="/v2/event", tags=["events"])
 
 
 @router.post("")
