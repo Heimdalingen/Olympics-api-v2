@@ -17,10 +17,10 @@ services:
     image: redis:7-alpine
     volumes:
       - cache_data:/data
-  
+
   logger:
     build: ./services/logger
-    volumes: 
+    volumes:
       - log_data:/logs
 
   rate-limiter:
@@ -28,7 +28,8 @@ services:
 
   token-shop:
     build: ./services/token-shop
-
+    ports:
+      - "8003:8000"
 
   main-api:
     build: .
@@ -61,7 +62,6 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - main-api
-
 
 volumes:
   db_data:

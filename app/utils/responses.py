@@ -25,8 +25,17 @@ def to_csv(data: list) -> Response:
 
 
 def format_response(events: list, accept: str):
-    """Return XML, CSV, or JSON depending on the Accept header."""
-    serialized = [OlympicEventOut.model_validate(e).model_dump() for e in events]
+    """Return XML, CSV, or JSON depending on the Accept header.
+    
+    Accepts either ORM model instances or pre-serialized dicts (cache hits).
+    """
+    if events and isinstance(events[0], dict):
+        # Already serialized (came from cache)
+        serialized = events
+    else:
+        # ORM objects — serialize them
+        serialized = [OlympicEventOut.model_validate(e).model_dump() for e in events]
+
     if "application/xml" in accept:
         return to_xml(serialized)
     if "text/csv" in accept:
